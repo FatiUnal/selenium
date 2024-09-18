@@ -1,4 +1,6 @@
 package org.example;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,6 +10,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,22 +18,31 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        for (String str: getAcente("15505")){
+        for (String str: getAcente("16000")){
             System.out.println(str);
         }
     }
 
     public static List<String> getAcente(String acenteNo) {
 
-        if (!acenteNo.matches("\\d+")&& acenteNo.length()>6)
+        if (!acenteNo.matches("\\d+") || acenteNo.length()>6)
             throw new RuntimeException("Geçersiz data");
 
         List<String> elemanlar = new ArrayList<>();
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Fatih\\Desktop\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
+        // WebDriverManager kullanarak ChromeDriver'ı ayarla
+        WebDriverManager.chromedriver().setup();
+
+        // ChromeOptions ile headless modu ayarla
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");  // Arayüz olmadan çalıştırır
+        options.addArguments("--no-sandbox");  // Root yetkisi gereksinimlerini atlar
+        options.addArguments("--disable-dev-shm-usage");
+
+        WebDriver driver = new ChromeDriver(options);
 
         try {
             // Web sayfasını aç
